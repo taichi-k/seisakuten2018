@@ -55,6 +55,8 @@ def my_capture():
     os.mkdir("output/" + now_str)
     flg = False
     sec = 0
+    #時間間隔, 何秒ごとに撮影するか
+    gap = 5
 
     while(cap.isOpened()):
         ret, c_frame = cap.read()
@@ -75,7 +77,7 @@ def my_capture():
         #5秒たったら
         if sec == (i+1)*5:
             cv2.imwrite("output/" + now_str + "/" + c_faces[i] + ".jpg", c_frame[int(cap_h/2 - window_height/2):int(cap_h/2 + window_height/2),int(cap_w/2 - window_width/2):int(cap_w/2 + window_width/2)])
-            cv2.imwrite("/Volumes/斉藤のパブリックフォルダ/output/" + "happy" + "_" + str(int(time.time())).replace(".","") + ".jpg", c_frame[int(cap_h/2 - window_height/2):int(cap_h/2 + window_height/2),int(cap_w/2 - window_width/2):int(cap_w/2 + window_width/2)])
+            # cv2.imwrite("/Volumes/斉藤のパブリックフォルダ/output/" + "happy" + "_" + str(int(time.time())).replace(".","") + ".jpg", c_frame[int(cap_h/2 - window_height/2):int(cap_h/2 + window_height/2),int(cap_w/2 - window_width/2):int(cap_w/2 + window_width/2)])
             i += 1
             if i == len(c_faces): break
         if key_pressed & 0xFF == ord('q'):
@@ -132,7 +134,7 @@ def detect(face_name, img2):
                 n = data[1]
                 if m.distance < ratio * n.distance:
                     good.append([m])
-    # img3 = cv2.drawMatchesKnn(img1, kp1, frame, kp2, good, None, flags=2)
+
         #もし特徴点が3つ以上あったら
         if len(good) > 3:
             print(face_name+" Existing!!!!!")
@@ -151,6 +153,8 @@ def main():
     ura_count = 0
     time_before = time.time()
     found_flg = False
+    #何秒ごとにdetect関数を呼ぶか
+    interval = 0.5
     while(cap.isOpened()):
         # print(detected_counts)
         if detected == "nothing":
@@ -162,8 +166,8 @@ def main():
             img2 = frame[int(cap_h/2 - window_height/2):int(cap_h/2 + window_height/2),int(cap_w/2 - window_width/2):int(cap_w/2 + window_width/2)]
             # 特徴量の検出と特徴量ベクトルの計算
             time_after = time.time()
-            #0.5秒経ったら
-            if time_after - time_before > 0.5:
+            #interval秒経ったら
+            if time_after - time_before > interval:
                 time_before = time.time()
                 for face in faces:
                     if found_flg == False:
