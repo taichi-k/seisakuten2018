@@ -23,10 +23,6 @@ window_height = 300
 start = (int(cap_w/2)-150,int(cap_h/2)-150)
 end = (int(cap_w/2)+150,int(cap_h/2)+150)
 
-def cvtHSV(hsv):
-    hsv[:,:,1][hsv[:,:,1]>hsv[:,:,2]] = hsv[:,:,2][hsv[:,:,1]>hsv[:,:,2]]
-    return hsv
-
 def main():
     count = 0
     while(cap.isOpened()):
@@ -43,9 +39,9 @@ def main():
                 #CNNのinput sizeにresize
                 img = cv2.resize(img,(size,size),cv2.INTER_LINEAR)
                 #前処理
-                img = (hsv-np.mean(img,axis=(0,1)))/np.std(hsv,axis=(0,1))
+                img = (img-np.mean(img,axis=(0,1)))/np.std(img,axis=(0,1))
                 #アンサンブル
-                pred = (model.predict(img[np.newaxis,:,:,:])+model2.predict(hsv[np.newaxis,:,:,:]))/2
+                pred = (model.predict(img[np.newaxis,:,:,:])+model2.predict(img[np.newaxis,:,:,:]))/2
                 #予測最大値
                 M = np.max(pred)
                 #最大値が0.8以上のときのみ予測
